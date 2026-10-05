@@ -162,16 +162,18 @@ function Auth() {
                 data-auto_prompt="false"
               ></div>
 
-              <div
-                className="g_id_signin w-full"
-                data-type="standard"
-                data-shape="rectangular"
-                data-theme="outline"
-                data-text="signin_with"
-                data-size="large"
-                data-logo_alignment="left"
-                data-width="container"
-              ></div>
+              <div className="w-full flex justify-center">
+                <div
+                  className="g_id_signin"
+                  data-type="standard"
+                  data-shape="rectangular"
+                  data-theme="outline"
+                  data-text="signin_with"
+                  data-size="large"
+                  data-logo_alignment="left"
+                  data-width="container"
+                ></div>
+              </div>
               
               {showResetForm && (
                 <div className="mt-4 space-y-4 rounded-lg border border-border/60 bg-secondary/40 p-4">
