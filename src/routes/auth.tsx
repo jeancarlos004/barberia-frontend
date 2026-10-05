@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { Logo } from "@/components/barber/Logo";
 import { Button } from "@/components/ui/button";
@@ -37,19 +37,27 @@ function Auth() {
   const [regData, setRegData] = useState({ nombre: "", email: "", telefono: "", password: "" });
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
+  const googleButtonRef = useRef<HTMLDivElement>(null);
 
   // Cargar Google Identity Services
   useEffect(() => {
-    // Solo cargar si no está ya cargado
-    if ((window as any).google && (window as any).google.accounts) {
-      return;
-    }
+    const loadGoogleScript = () => {
+      // Solo cargar si no está ya cargado
+      if ((window as any).google && (window as any).google.accounts) {
+        return;
+      }
 
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        console.log("Google Identity Services cargado");
+      };
+      document.body.appendChild(script);
+    };
+
+    loadGoogleScript();
 
     // Exponer callback globalmente para Google
     (window as any).handleGoogleCallback = async (response: google.credential.GoogleCredentialResponse) => {
@@ -72,9 +80,46 @@ function Auth() {
     };
 
     return () => {
-      // No eliminar el script ni el callback para permitir que funcione entre tabs
+      // No eliminar nada para mantener persistencia
     };
   }, [navigate]);
+
+  // Renderizar botón de Google cuando el script esté cargado
+  useEffect(() => {
+    const renderGoogleButton = () => {
+      if (!(window as any).google || !(window as any).google.accounts || !googleButtonRef.current) {
+        return;
+      }
+
+      // Limpiar contenido previo
+      googleButtonRef.current.innerHTML = "";
+
+      // Renderizar botón
+      (window as any).google.accounts.id.renderButton(googleButtonRef.current, {
+        type: "standard",
+        shape: "rectangular",
+        theme: "outline",
+        text: "signin_with",
+        size: "large",
+        logo_alignment: "left",
+        width: googleButtonRef.current.offsetWidth || 300,
+      });
+    };
+
+    // Esperar a que el DOM esté listo
+    const timer = setTimeout(renderGoogleButton, 100);
+
+    // Renderizar también cuando cambie el tamaño de la ventana
+    const handleResize = () => {
+      renderGoogleButton();
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,26 +211,7 @@ function Auth() {
                 data-auto_prompt="false"
               ></div>
 
-              <div className="w-full">
-                <div
-                  className="g_id_signin"
-                  data-type="standard"
-                  data-shape="rectangular"
-                  data-theme="outline"
-                  data-text="signin_with"
-                  data-size="large"
-                  data-logo_alignment="left"
-                  data-width="100%"
-                ></div>
-              </div>
-              <style>{`
-                .g_id_signin {
-                  width: 100% !important;
-                }
-                .g_id_signin iframe {
-                  width: 100% !important;
-                }
-              `}</style>
+              <div className="w-full" ref={googleButtonRef as any}></div>
               
               {showResetForm && (
                 <div className="mt-4 space-y-4 rounded-lg border border-border/60 bg-secondary/40 p-4">
