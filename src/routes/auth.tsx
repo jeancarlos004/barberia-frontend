@@ -163,14 +163,14 @@ function Auth() {
               ></div>
 
               <div
-                className="g_id_signin"
+                className="g_id_signin w-full"
                 data-type="standard"
                 data-shape="rectangular"
                 data-theme="outline"
                 data-text="signin_with"
                 data-size="large"
                 data-logo_alignment="left"
-                data-width="100%"
+                data-width="container"
               ></div>
               
               {showResetForm && (
