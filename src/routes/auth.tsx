@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 import { Logo } from "@/components/barber/Logo";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { solicitarRecuperacionPassword } from "@/lib/barber-store";
+import { solicitarRecuperacionPassword, loginWithGoogle } from "@/lib/barber-store";
+
+// Declarar tipo global para Google callback
+declare global {
+  interface Window {
+    handleGoogleCallback: (response: google.credential.GoogleCredentialResponse) => Promise<void>;
+  }
+}
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,6 +37,40 @@ function Auth() {
   const [regData, setRegData] = useState({ nombre: "", email: "", telefono: "", password: "" });
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
+
+  // Cargar Google Identity Services
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    // Exponer callback globalmente para Google
+    (window as any).handleGoogleCallback = async (response: google.credential.GoogleCredentialResponse) => {
+      try {
+        const res = await loginWithGoogle(response.credential);
+        if (!res.ok) {
+          toast.error(res.error);
+          return;
+        }
+        toast.success(`Bienvenido, ${res.user!.nombre}`);
+        // Navigate based on user role
+        if (res.user!.role === "admin") {
+          navigate({ to: "/admin", replace: true });
+        } else {
+          navigate({ to: "/mis-turnos", replace: true });
+        }
+      } catch (err) {
+        toast.error("Error al iniciar sesión con Google");
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+      delete (window as any).handleGoogleCallback;
+    };
+  }, [navigate]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +146,32 @@ function Auth() {
                   ¿Olvidaste tu contraseña?
                 </button>
               </form>
+
+              <div className="mt-6 flex items-center gap-4">
+                <div className="flex-1 border-t border-border/60"></div>
+                <span className="text-xs text-muted-foreground">o</span>
+                <div className="flex-1 border-t border-border/60"></div>
+              </div>
+
+              <div
+                id="g_id_onload"
+                data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleGoogleCallback"
+                data-auto_prompt="false"
+              ></div>
+
+              <div
+                className="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left"
+                data-width="100%"
+              ></div>
               
               {showResetForm && (
                 <div className="mt-4 space-y-4 rounded-lg border border-border/60 bg-secondary/40 p-4">
@@ -137,12 +205,6 @@ function Auth() {
                   </form>
                 </div>
               )}
-              
-              <div className="mt-6 rounded-lg border border-border/60 bg-secondary/40 p-3 text-xs text-muted-foreground">
-                <p className="font-medium text-foreground">Cuentas de prueba</p>
-                <p>Cliente: cliente@barberia.com / cliente123</p>
-                <p>Admin: admin@barberia.com / admin123</p>
-              </div>
             </TabsContent>
 
             <TabsContent value="registro" className="mt-6">

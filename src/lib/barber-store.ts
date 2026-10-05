@@ -247,6 +247,22 @@ export async function register(input: {
   }
 }
 
+export async function loginWithGoogle(credential: string): Promise<{ ok: boolean; error?: string; user?: User }> {
+  try {
+    const data = await api<AuthPayload>("/api/auth/google/validate/", {
+      method: "POST",
+      body: JSON.stringify({ credential }),
+    });
+    setTokens(data.access, data.refresh);
+    const user = mapUser(data.user);
+    persistUser(user);
+    return { ok: true, user };
+  } catch (err) {
+    const message = err instanceof ApiError ? err.message : "No se pudo iniciar sesión con Google.";
+    return { ok: false, error: message };
+  }
+}
+
 export async function invalidateBarber(qc: QueryClient) {
   await Promise.all([
     qc.invalidateQueries({ queryKey: ["servicios"] }),
