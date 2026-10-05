@@ -162,13 +162,16 @@ function Auth() {
                 data-auto_prompt="false"
               ></div>
 
-              <div className="w-full flex justify-center">
+              <div className="w-full">
                 <div
                   className="g_id_signin"
-                  data-type="icon"
-                  data-shape="square"
+                  data-type="standard"
+                  data-shape="pill"
                   data-theme="outline"
+                  data-text="signin_with"
                   data-size="large"
+                  data-logo_alignment="center"
+                  data-width="100%"
                 ></div>
               </div>
               
