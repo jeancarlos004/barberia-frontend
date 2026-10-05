@@ -40,6 +40,11 @@ function Auth() {
 
   // Cargar Google Identity Services
   useEffect(() => {
+    // Solo cargar si no está ya cargado
+    if ((window as any).google && (window as any).google.accounts) {
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
@@ -67,8 +72,7 @@ function Auth() {
     };
 
     return () => {
-      document.body.removeChild(script);
-      delete (window as any).handleGoogleCallback;
+      // No eliminar el script ni el callback para permitir que funcione entre tabs
     };
   }, [navigate]);
 
@@ -166,14 +170,22 @@ function Auth() {
                 <div
                   className="g_id_signin"
                   data-type="standard"
-                  data-shape="pill"
+                  data-shape="rectangular"
                   data-theme="outline"
                   data-text="signin_with"
                   data-size="large"
-                  data-logo_alignment="center"
+                  data-logo_alignment="left"
                   data-width="100%"
                 ></div>
               </div>
+              <style>{`
+                .g_id_signin {
+                  width: 100% !important;
+                }
+                .g_id_signin iframe {
+                  width: 100% !important;
+                }
+              `}</style>
               
               {showResetForm && (
                 <div className="mt-4 space-y-4 rounded-lg border border-border/60 bg-secondary/40 p-4">
