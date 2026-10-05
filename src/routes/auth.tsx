@@ -165,13 +165,10 @@ function Auth() {
               <div className="w-full flex justify-center">
                 <div
                   className="g_id_signin"
-                  data-type="standard"
-                  data-shape="rectangular"
+                  data-type="icon"
+                  data-shape="square"
                   data-theme="outline"
-                  data-text="signin_with"
                   data-size="large"
-                  data-logo_alignment="left"
-                  data-width="container"
                 ></div>
               </div>
               
