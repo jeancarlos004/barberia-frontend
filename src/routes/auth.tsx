@@ -106,8 +106,21 @@ function Auth() {
       });
     };
 
-    // Esperar a que el DOM esté listo
-    const timer = setTimeout(renderGoogleButton, 100);
+    // Intentar renderizar inmediatamente
+    renderGoogleButton();
+
+    // Si Google no está listo, intentar varias veces
+    let attempts = 0;
+    const maxAttempts = 10;
+    const interval = setInterval(() => {
+      attempts++;
+      if ((window as any).google && (window as any).google.accounts) {
+        clearInterval(interval);
+        renderGoogleButton();
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
+      }
+    }, 100);
 
     // Renderizar también cuando cambie el tamaño de la ventana
     const handleResize = () => {
@@ -116,7 +129,7 @@ function Auth() {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      clearTimeout(timer);
+      clearInterval(interval);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
