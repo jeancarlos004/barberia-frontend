@@ -16,7 +16,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
       <div className="mx-auto grid h-16 max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 sm:gap-4 sm:px-4 md:grid-cols-[auto_minmax(0,1fr)_auto]">
-        <Logo className="min-w-0 [&>span:last-child]:hidden min-[390px]:[&>span:last-child]:block" />
+        <Logo className="min-w-0" />
         <nav className="hidden min-w-0 items-center justify-self-end gap-7 md:flex">
           {links.map((l) => (
             <Link
