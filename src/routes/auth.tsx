@@ -37,6 +37,7 @@ function Auth() {
   const [regData, setRegData] = useState({ nombre: "", email: "", telefono: "", password: "" });
   const [resetEmail, setResetEmail] = useState("");
   const [showResetForm, setShowResetForm] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
   // Cargar Google Identity Services
@@ -132,7 +133,7 @@ function Auth() {
       clearInterval(interval);
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [activeTab]); // Re-renderizar cuando cambie el tab
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,7 +157,7 @@ function Auth() {
           <Logo />
         </div>
         <div className="surface-elite rounded-xl p-4 sm:rounded-2xl sm:p-6">
-          <Tabs defaultValue="login">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Iniciar sesión</TabsTrigger>
               <TabsTrigger value="registro">Registrarse</TabsTrigger>
