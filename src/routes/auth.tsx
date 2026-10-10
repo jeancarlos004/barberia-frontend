@@ -94,7 +94,7 @@ function Auth() {
 
       // Inicializar Google Identity Services
       (window as any).google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        client_id: import.meta.env['VITE_GOOGLE_CLIENT_ID'],
         callback: (window as any).handleGoogleCallback,
         auto_select: false,
         ux_mode: "popup",
