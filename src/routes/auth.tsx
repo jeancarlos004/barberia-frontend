@@ -87,6 +87,20 @@ function Auth() {
 
   // Renderizar botón de Google cuando el script esté cargado
   useEffect(() => {
+    const initializeGoogle = () => {
+      if (!(window as any).google || !(window as any).google.accounts) {
+        return;
+      }
+
+      // Inicializar Google Identity Services
+      (window as any).google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: (window as any).handleGoogleCallback,
+        auto_select: false,
+        ux_mode: "popup",
+      });
+    };
+
     const renderGoogleButton = () => {
       if (!(window as any).google || !(window as any).google.accounts || !googleButtonRef.current) {
         return;
@@ -107,7 +121,8 @@ function Auth() {
       });
     };
 
-    // Intentar renderizar inmediatamente
+    // Intentar inicializar y renderizar inmediatamente
+    initializeGoogle();
     renderGoogleButton();
 
     // Si Google no está listo, intentar varias veces
@@ -117,6 +132,7 @@ function Auth() {
       attempts++;
       if ((window as any).google && (window as any).google.accounts) {
         clearInterval(interval);
+        initializeGoogle();
         renderGoogleButton();
       } else if (attempts >= maxAttempts) {
         clearInterval(interval);
