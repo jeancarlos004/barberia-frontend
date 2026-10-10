@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { solicitarRecuperacionPassword, loginWithGoogle } from "@/lib/barber-store";
+import { loginWithGoogle } from "@/lib/barber-store";
 
 // Declarar tipo global para Google callback
 declare global {
@@ -35,8 +35,6 @@ function Auth() {
   const { login, register, isLoading } = useAuth();
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [regData, setRegData] = useState({ nombre: "", email: "", telefono: "", password: "" });
-  const [resetEmail, setResetEmail] = useState("");
-  const [showResetForm, setShowResetForm] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
@@ -151,18 +149,6 @@ function Auth() {
     };
   }, [activeTab]); // Re-renderizar cuando cambie el tab
 
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await solicitarRecuperacionPassword(resetEmail);
-      toast.success("Se ha enviado un correo con las instrucciones para restablecer tu contraseña");
-      setShowResetForm(false);
-      setResetEmail("");
-    } catch (err) {
-      toast.error("Error al solicitar recuperación de contraseña");
-    }
-  };
-
   const goHome = (role: string) =>
     navigate({ to: role === "admin" ? "/admin" : "/mis-turnos", replace: true });
 
@@ -217,13 +203,6 @@ function Auth() {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Entrando…" : "Entrar"}
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => setShowResetForm(true)}
-                  className="mt-2 w-full text-sm text-muted-foreground hover:text-foreground"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
               </form>
 
               <div className="mt-6 flex items-center gap-4">
@@ -232,49 +211,7 @@ function Auth() {
                 <div className="flex-1 border-t border-border/60"></div>
               </div>
 
-              <div
-                id="g_id_onload"
-                data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-                data-context="signin"
-                data-ux_mode="popup"
-                data-callback="handleGoogleCallback"
-                data-auto_prompt="false"
-              ></div>
-
               <div className="w-full" ref={googleButtonRef as any}></div>
-              
-              {showResetForm && (
-                <div className="mt-4 space-y-4 rounded-lg border border-border/60 bg-secondary/40 p-4">
-                  <p className="text-sm font-medium">Recuperar Contraseña</p>
-                  <form onSubmit={handlePasswordReset} className="space-y-3">
-                    <Field label="Correo">
-                      <Input
-                        type="email"
-                        required
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                        placeholder="tu@correo.com"
-                      />
-                    </Field>
-                    <div className="flex gap-2">
-                      <Button type="submit" size="sm" className="flex-1">
-                        Enviar
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setShowResetForm(false);
-                          setResetEmail("");
-                        }}
-                      >
-                        Cancelar
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              )}
             </TabsContent>
 
             <TabsContent value="registro" className="mt-6">
