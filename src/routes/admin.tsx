@@ -652,8 +652,11 @@ function HorariosPanel() {
     try {
       await guardarHorarios(next);
       await invalidateBarber(queryClient);
+      toast.success("Horarios actualizados correctamente");
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : "No se pudieron guardar los horarios");
+      console.error("Error guardando horarios:", err);
+      const message = err instanceof ApiError ? err.message : "No se pudieron guardar los horarios";
+      toast.error(message);
     }
   };
 
@@ -667,9 +670,21 @@ function HorariosPanel() {
             <span className="min-w-0 sm:w-28">{DIAS[d]}</span>
             <Switch checked={h.abierto} onCheckedChange={(v) => save(d, { abierto: v })} />
             <div className="col-span-2 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:contents">
-              <Input type="time" value={h.desde} onChange={(e) => save(d, { desde: e.target.value })} className="min-w-0 sm:w-32" />
+              <Input
+                type="time"
+                value={h.desde}
+                onChange={(e) => save(d, { desde: e.target.value })}
+                disabled={!h.abierto}
+                className="min-w-0 sm:w-32"
+              />
               <span className="text-muted-foreground">a</span>
-              <Input type="time" value={h.hasta} onChange={(e) => save(d, { hasta: e.target.value })} className="min-w-0 sm:w-32" />
+              <Input
+                type="time"
+                value={h.hasta}
+                onChange={(e) => save(d, { hasta: e.target.value })}
+                disabled={!h.abierto}
+                className="min-w-0 sm:w-32"
+              />
             </div>
           </div>
         );

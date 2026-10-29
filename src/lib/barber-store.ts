@@ -407,7 +407,7 @@ export async function eliminarServicio(id: string) {
 export async function guardarHorarios(horarios: Schedule[]) {
   await api("/api/horarios/", {
     method: "PUT",
-    body: JSON.stringify(horarios),
+    body: JSON.stringify({ horarios }),
   });
 }
 
