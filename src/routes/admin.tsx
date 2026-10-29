@@ -655,8 +655,13 @@ function HorariosPanel() {
       toast.success("Horarios actualizados correctamente");
     } catch (err) {
       console.error("Error guardando horarios:", err);
-      const message = err instanceof ApiError ? err.message : "No se pudieron guardar los horarios";
-      toast.error(message);
+      console.error("Datos enviados:", next);
+      if (err instanceof ApiError) {
+        console.error("Respuesta del backend:", err.body);
+        toast.error(err.message || "No se pudieron guardar los horarios");
+      } else {
+        toast.error("No se pudieron guardar los horarios");
+      }
     }
   };
 
