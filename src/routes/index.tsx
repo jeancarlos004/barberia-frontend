@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Award, Clock, MapPin, Phone, Sparkles, Star, XCircle } from "lucide-react";
+import { ArrowRight, Award, Clock, MapPin, Phone, Sparkles, Star } from "lucide-react";
 
 import heroImg from "@/assets/hero-barberia.jpg";
 import { SiteHeader } from "@/components/barber/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { useBarberData, useCurrentUser, formatPrecio, formatFecha, formatHora, DIAS } from "@/lib/barber-store";
+import { useBarberData, useCurrentUser, formatPrecio, DIAS } from "@/lib/barber-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -89,27 +89,6 @@ function Index() {
             <Info icon={Phone} title={db.settings.telefono || "Teléfono"} text="WhatsApp" />
           </div>
         </section>
-
-        {/* Notificación de bloqueos próximos */}
-        {db.blocks.length > 0 && (
-          <section className="border-b border-border/60 bg-warning/10">
-            <div className="mx-auto max-w-6xl px-4 py-4">
-              <div className="flex items-start gap-3">
-                <XCircle className="size-5 text-warning mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-warning">Bloqueos próximos</h3>
-                  <div className="mt-2 space-y-1">
-                    {db.blocks.map((b) => (
-                      <div key={b.id} className="text-sm text-muted-foreground">
-                        {formatFecha(b.fecha)}: {formatHora(b.desde)} - {formatHora(b.hasta)} - {b.motivo || "Sin motivo"}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="mx-auto max-w-6xl px-4 py-14 sm:py-20">
           <h2 className="font-display text-3xl uppercase">Nuestros servicios</h2>

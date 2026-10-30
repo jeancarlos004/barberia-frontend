@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { CalendarDays, Clock, Zap } from "lucide-react";
+import { CalendarDays, Clock, XCircle, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -87,6 +87,29 @@ function MisTurnos() {
       <main className="mx-auto grid max-w-5xl gap-8 px-4 py-7 sm:py-10 lg:grid-cols-[1fr_18rem]">
         <div className="min-w-0">
           <h1 className="font-display text-3xl uppercase">Mis turnos</h1>
+
+          {/* Notificación de bloqueos próximos */}
+          {db.blocks.length > 0 && (
+            <div className="mt-6 rounded-xl border border-warning/50 bg-warning/10 p-4">
+              <div className="flex items-start gap-3">
+                <XCircle className="size-5 text-warning mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-warning">Bloqueos próximos</h3>
+                  <div className="mt-2 space-y-2">
+                    {db.blocks.map((b) => (
+                      <div key={b.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border border-warning/30 bg-background/50 px-3 py-2 text-sm">
+                        <span className="min-w-0 sm:flex-1">{formatFecha(b.fecha)}</span>
+                        <span className="text-muted-foreground">
+                          {formatHora(b.desde)} - {formatHora(b.hasta)}
+                        </span>
+                        <span className="col-span-2 text-muted-foreground sm:col-span-1">{b.motivo || "Sin motivo"}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <h2 className="mt-8 font-display text-lg">Próximos turnos</h2>
           <div className="mt-3 space-y-3">
